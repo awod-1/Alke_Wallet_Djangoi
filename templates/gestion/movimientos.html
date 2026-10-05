@@ -1,5 +1,219 @@
-{% extends 'base.html' %}{% load moneda %}{% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4"><div><span class="badge text-bg-warning mb-2">Actividad</span><h1 class="h2 fw-bold">Movimientos</h1><p class="text-secondary mb-0">Revisa, filtra y confirma tus operaciones.</p></div><a class="btn btn-dark" href="{% url 'movimiento_nuevo' %}">+ Nuevo movimiento</a></div>
-<div class="card border-0 shadow-sm mb-4"><div class="card-body"><form class="row g-3" method="get"><div class="col-md-5"><label class="form-label">Buscar</label><input class="form-control" name="q" value="{{ request.GET.q }}" placeholder="Descripción o cuenta"></div><div class="col-md-3"><label class="form-label">Tipo</label><select class="form-select" name="tipo"><option value="">Todos</option><option value="deposito" {% if request.GET.tipo == 'deposito' %}selected{% endif %}>Depósito</option><option value="retiro" {% if request.GET.tipo == 'retiro' %}selected{% endif %}>Retiro</option><option value="transferencia" {% if request.GET.tipo == 'transferencia' %}selected{% endif %}>Transferencia</option></select></div><div class="col-md-2"><label class="form-label">Estado</label><select class="form-select" name="solo_confirmadas"><option value="">Todos</option><option value="1" {% if request.GET.solo_confirmadas == '1' %}selected{% endif %}>Confirmados</option></select></div><div class="col-md-2 d-flex align-items-end"><button class="btn btn-warning w-100">Filtrar</button></div></form></div></div>
-<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="table-dark"><tr><th>Tipo</th><th>Cuenta</th><th>Monto</th><th>Estado</th><th>Descripción</th><th>Acciones</th></tr></thead><tbody>{% for t in movimientos %}<tr><td>{{ t.get_tipo_display }}</td><td>{{ t.cuenta.alias }}{% if t.destino %}<div class="small text-secondary">a {{ t.destino.alias }}</div>{% endif %}</td><td class="fw-bold">{{ t.monto|clp }}</td><td>{% if t.confirmada %}<span class="badge text-bg-success">Confirmado</span>{% else %}<span class="badge text-bg-warning">Pendiente</span>{% endif %}</td><td>{{ t.descripcion|default:'—' }}</td><td>{% if not t.confirmada %}<div class="d-flex flex-wrap gap-1"><a class="btn btn-outline-dark btn-sm" href="{% url 'movimiento_editar' t.pk %}">Editar</a><a class="btn btn-outline-danger btn-sm" href="{% url 'movimiento_eliminar' t.pk %}">Eliminar</a><form method="post" action="{% url 'movimiento_confirmar' t.pk %}">{% csrf_token %}<button class="btn btn-warning btn-sm">Confirmar</button></form></div>{% else %}<span class="text-secondary small">Procesado</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="6" class="text-center text-secondary py-5">No hay movimientos registrados.</td></tr>{% endfor %}</tbody></table></div></div>
+{% extends 'base.html' %}
+{% load moneda %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+
+    <div>
+        <span class="badge text-bg-warning mb-2">
+            Actividad
+        </span>
+
+        <h1 class="h2 fw-bold">
+            Movimientos
+        </h1>
+
+        <p class="text-secondary mb-0">
+            Revisa, filtra y confirma tus operaciones.
+        </p>
+    </div>
+
+    <a class="btn btn-dark" href="{% url 'movimiento_nuevo' %}">
+        + Nuevo movimiento
+    </a>
+
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+
+        <form class="row g-3" method="get">
+
+            <div class="col-md-5">
+                <label class="form-label">
+                    Buscar
+                </label>
+
+                <input
+                    class="form-control"
+                    name="q"
+                    value="{{ request.GET.q }}"
+                    placeholder="Descripción o cuenta"
+                >
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">
+                    Tipo
+                </label>
+
+                <select class="form-select" name="tipo">
+                    <option value="">
+                        Todos
+                    </option>
+
+                    <option
+                        value="deposito"
+                        {% if request.GET.tipo == 'deposito' %}selected{% endif %}
+                    >
+                        Depósito
+                    </option>
+
+                    <option
+                        value="retiro"
+                        {% if request.GET.tipo == 'retiro' %}selected{% endif %}
+                    >
+                        Retiro
+                    </option>
+
+                    <option
+                        value="transferencia"
+                        {% if request.GET.tipo == 'transferencia' %}selected{% endif %}
+                    >
+                        Transferencia
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">
+                    Estado
+                </label>
+
+                <select class="form-select" name="solo_confirmadas">
+                    <option value="">
+                        Todos
+                    </option>
+
+                    <option
+                        value="1"
+                        {% if request.GET.solo_confirmadas == '1' %}selected{% endif %}
+                    >
+                        Confirmados
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-warning w-100">
+                    Filtrar
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Cuenta</th>
+                    <th>Monto</th>
+                    <th>Estado</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for t in movimientos %}
+
+                    <tr>
+                        <td>
+                            {{ t.get_tipo_display }}
+                        </td>
+
+                        <td>
+                            {{ t.cuenta.alias }}
+
+                            {% if t.destino %}
+                                <div class="small text-secondary">
+                                    a {{ t.destino.alias }}
+                                </div>
+                            {% endif %}
+                        </td>
+
+                        <td class="fw-bold">
+                            {{ t.monto|clp }}
+                        </td>
+
+                        <td>
+                            {% if t.confirmada %}
+                                <span class="badge text-bg-success">
+                                    Confirmado
+                                </span>
+                            {% else %}
+                                <span class="badge text-bg-warning">
+                                    Pendiente
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ t.descripcion|default:'—' }}
+                        </td>
+
+                        <td>
+                            {% if not t.confirmada %}
+
+                                <div class="d-flex flex-wrap gap-1">
+
+                                    <a
+                                        class="btn btn-outline-dark btn-sm"
+                                        href="{% url 'movimiento_editar' t.pk %}"
+                                    >
+                                        Editar
+                                    </a>
+
+                                    <a
+                                        class="btn btn-outline-danger btn-sm"
+                                        href="{% url 'movimiento_eliminar' t.pk %}"
+                                    >
+                                        Eliminar
+                                    </a>
+
+                                    <form
+                                        method="post"
+                                        action="{% url 'movimiento_confirmar' t.pk %}"
+                                    >
+                                        {% csrf_token %}
+
+                                        <button class="btn btn-warning btn-sm">
+                                            Confirmar
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="text-secondary small">
+                                    Procesado
+                                </span>
+
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="6"
+                            class="text-center text-secondary py-5"
+                        >
+                            No hay movimientos registrados.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
 {% endblock %}

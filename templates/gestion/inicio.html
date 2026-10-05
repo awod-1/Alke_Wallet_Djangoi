@@ -1,44 +1,176 @@
-{% extends 'base.html' %}{% load moneda %}{% block content %}
+{% extends 'base.html' %}
+{% load moneda %}
+
+{% block content %}
 <div class="row g-4 align-items-stretch mb-5">
-  <div class="col-lg-7">
-    <div class="card bg-dark text-white border-0 shadow h-100">
-      <div class="card-body p-4 p-lg-5">
-        <span class="badge text-bg-warning text-dark mb-3">Resumen financiero</span>
-        <h1 class="display-6 fw-bold">Hola, {{ cliente.nombre }}</h1>
-        <p class="text-white-50 mb-4">Administra tus cuentas y movimientos desde un solo lugar.</p>
-        <p class="text-white-50 mb-1">Saldo total disponible</p>
-        <p class="display-5 fw-bold text-warning mb-0">{{ saldo|clp }}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-5">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-body p-4">
-        <h2 class="h5 fw-bold">Accesos rápidos</h2>
-        <p class="text-secondary">Realiza las operaciones principales de tu billetera.</p>
-        <div class="d-grid gap-2">
-          <a class="btn btn-warning" href="{% url 'movimiento_nuevo' %}">Registrar movimiento</a>
-          <a class="btn btn-outline-dark" href="{% url 'movimientos' %}">Ver movimientos</a>
-          <a class="btn btn-outline-dark" href="{% url 'reporte' %}">Ver reportes</a>
+
+    <div class="col-lg-7">
+        <div class="card bg-dark text-white border-0 shadow h-100">
+            <div class="card-body p-4 p-lg-5">
+
+                <span class="badge text-bg-warning text-dark mb-3">
+                    Resumen financiero
+                </span>
+
+                <h1 class="display-6 fw-bold">
+                    Hola, {{ cliente.nombre }}
+                </h1>
+
+                <p class="text-white-50 mb-4">
+                    Administra tus cuentas y movimientos desde un solo lugar.
+                </p>
+
+                <p class="text-white-50 mb-1">
+                    Saldo total disponible
+                </p>
+
+                <p class="display-5 fw-bold text-warning mb-0">
+                    {{ saldo|clp }}
+                </p>
+
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <h2 class="h5 fw-bold">
+                    Accesos rápidos
+                </h2>
+
+                <p class="text-secondary">
+                    Realiza las operaciones principales de tu billetera.
+                </p>
+
+                <div class="d-grid gap-2">
+                    <a
+                        class="btn btn-warning"
+                        href="{% url 'movimiento_nuevo' %}"
+                    >
+                        Registrar movimiento
+                    </a>
+
+                    <a
+                        class="btn btn-outline-dark"
+                        href="{% url 'movimientos' %}"
+                    >
+                        Ver movimientos
+                    </a>
+
+                    <a
+                        class="btn btn-outline-dark"
+                        href="{% url 'reporte' %}"
+                    >
+                        Ver reportes
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 </div>
+
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
-  <div><h2 class="h3 fw-bold mb-1">Mis cuentas</h2><p class="text-secondary mb-0">Consulta el saldo y la actividad de tus cuentas digitales.</p></div>
-  <a class="btn btn-dark" href="{% url 'cuenta_nueva' %}">+ Nueva cuenta</a>
+    <div>
+        <h2 class="h3 fw-bold mb-1">
+            Mis cuentas
+        </h2>
+
+        <p class="text-secondary mb-0">
+            Consulta el saldo y la actividad de tus cuentas digitales.
+        </p>
+    </div>
+
+    <a class="btn btn-dark" href="{% url 'cuenta_nueva' %}">
+        + Nueva cuenta
+    </a>
 </div>
+
 <div class="row g-4">
-{% for cuenta in cuentas %}
-  <div class="col-md-6 col-xl-4"><div class="card border-0 shadow-sm h-100"><div class="card-body p-4">
-    <div class="d-flex justify-content-between mb-4"><span class="badge {% if cuenta.activa %}text-bg-success{% else %}text-bg-secondary{% endif %}">{% if cuenta.activa %}Activa{% else %}Inactiva{% endif %}</span><span class="text-secondary small">{{ cuenta.total }} movimiento{{ cuenta.total|pluralize }}</span></div>
-    <h3 class="h5 fw-bold">{{ cuenta.alias }}</h3><p class="text-secondary small text-break">N.º {{ cuenta.numero }}</p>
-    <p class="text-secondary small mb-1">Saldo disponible</p><p class="h2 fw-bold mb-4">{{ cuenta.saldo|clp }}</p>
-    <div class="d-flex gap-2"><a class="btn btn-outline-dark btn-sm" href="{% url 'cuenta_editar' cuenta.pk %}">Editar</a><a class="btn btn-outline-danger btn-sm" href="{% url 'cuenta_eliminar' cuenta.pk %}">Eliminar</a></div>
-  </div></div></div>
-{% empty %}
-  <div class="col-12"><div class="card border-0 shadow-sm"><div class="card-body p-5 text-center"><h3 class="h4">Crea tu primera cuenta</h3><p class="text-secondary">Agrega una cuenta digital para comenzar a utilizar Alke Wallet.</p><a class="btn btn-warning" href="{% url 'cuenta_nueva' %}">Crear cuenta</a></div></div></div>
-{% endfor %}
+    {% for cuenta in cuentas %}
+
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="badge {% if cuenta.activa %}text-bg-success{% else %}text-bg-secondary{% endif %}">
+                            {% if cuenta.activa %}
+                                Activa
+                            {% else %}
+                                Inactiva
+                            {% endif %}
+                        </span>
+
+                        <span class="text-secondary small">
+                            {{ cuenta.total }} movimiento{{ cuenta.total|pluralize }}
+                        </span>
+                    </div>
+
+                    <h3 class="h5 fw-bold">
+                        {{ cuenta.alias }}
+                    </h3>
+
+                    <p class="text-secondary small text-break">
+                        N.º {{ cuenta.numero }}
+                    </p>
+
+                    <p class="text-secondary small mb-1">
+                        Saldo disponible
+                    </p>
+
+                    <p class="h2 fw-bold mb-4">
+                        {{ cuenta.saldo|clp }}
+                    </p>
+
+                    <div class="d-flex gap-2">
+                        <a
+                            class="btn btn-outline-dark btn-sm"
+                            href="{% url 'cuenta_editar' cuenta.pk %}"
+                        >
+                            Editar
+                        </a>
+
+                        <a
+                            class="btn btn-outline-danger btn-sm"
+                            href="{% url 'cuenta_eliminar' cuenta.pk %}"
+                        >
+                            Eliminar
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    {% empty %}
+
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5 text-center">
+
+                    <h3 class="h4">
+                        Crea tu primera cuenta
+                    </h3>
+
+                    <p class="text-secondary">
+                        Agrega una cuenta digital para comenzar a utilizar Alke Wallet.
+                    </p>
+
+                    <a
+                        class="btn btn-warning"
+                        href="{% url 'cuenta_nueva' %}"
+                    >
+                        Crear cuenta
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
 </div>
 {% endblock %}
